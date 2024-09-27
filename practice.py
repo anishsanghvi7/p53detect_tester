@@ -91,7 +91,6 @@ disp.plot()
 plt.ylim([0, 1])
 plt.show()
 
-
 #### RECURSIVE FEATURE ELIMINATION ####
 # Note: Restarting with a blank model
 rfc = RandomForestClassifier(max_depth=8, random_state=0)
