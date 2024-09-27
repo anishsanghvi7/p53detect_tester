@@ -43,3 +43,9 @@ plt.xlabel('Actual Counts')
 plt.ylabel('Predicted Counts')
 plt.title('Actual vs Predicted Counts')
 plt.show()
+
+# According to chat gpt
+# The high R² (0.99) means that your model is doing an excellent job at explaining the variation in the data.
+# The MSE (41.38) suggests that while the predictions are close, there’s still an average deviation from the 
+# true values, which you may want to reduce by further tuning the model or using more advanced techniques 
+# (if the MSE is deemed high based on your specific domain knowledge).
