@@ -38,12 +38,12 @@ r2 = r2_score(y_test, y_pred)
 explained_var = explained_variance_score(y_test, y_pred)
 
 # Print evaluation results
-print(f"Mean Squared Error (MSE): {mse:.2f}")
-print(f"Root Mean Squared Error (RMSE): {rmse:.2f}")
-print(f"Mean Absolute Error (MAE): {mae:.2f}")
-print(f"Median Absolute Error: {medae:.2f}")
-print(f"R-squared (R²): {r2:.2f}")
-print(f"Explained Variance Score: {explained_var:.2f}")
+print(f"Mean Squared Error (MSE): {mse:.3f}")
+print(f"Root Mean Squared Error (RMSE): {rmse:.3f}")
+print(f"Mean Absolute Error (MAE): {mae:.3f}")
+print(f"Median Absolute Error: {medae:.3f}")
+print(f"R-squared (R²): {r2:.3f}")
+print(f"Explained Variance Score: {explained_var:.3f}")
 
 # Plotting predicted vs actual counts
 plt.scatter(y_test, y_pred, edgecolors=(0, 0, 0))
