@@ -93,10 +93,10 @@ print("\n--------------------------\n")
 
 ## Accuracy
 print("Accuracy score original: ", accuracy_score(y_test, y_pred))
-print("Balanced accuracy score original :" , balanced_accuracy_score(y_test, y_pred), '\n')
+print("Balanced accuracy score original: " , balanced_accuracy_score(y_test, y_pred), '\n')
 
 print("Accuracy score best hyperparameters: ", accuracy_score(y_test, y_pred_test_random))
-print("Balanced accuracy score best hyperparameters:" , balanced_accuracy_score(y_test, y_pred_test_random))
+print("Balanced accuracy score best hyperparameters: " , balanced_accuracy_score(y_test, y_pred_test_random))
 
 ## Classification report
 print("\nClassification report :")
