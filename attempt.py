@@ -15,7 +15,7 @@ from sklearn.datasets import load_breast_cancer
 import pandas as pd
 
 # Load Data
-data = pd.read_csv('../../../Downloads/new_sigs/SBS96_catalogue.TCGA-CA-6717-01.hg19.tally.csv')
+data = pd.read_csv('../../../Downloads/new_sigs/SBS96_catalogue.TCGA-CF-A9FF-01.hg19.tally.csv')
 X = data.drop(columns=['channel', 'type', 'count'])
 y = data['count']
 
@@ -107,3 +107,7 @@ print("Balanced accuracy score best hyperparameters:" , balanced_accuracy_score(
 ## Classification report
 print("\nClassification report :")
 print(classification_report(y_test, y_pred_test_random, zero_division=0))
+
+print("--------------------------\n")
+
+print(f"Model Performance: {rf_regressor.score(X_test, y_test):.5f} \n")
