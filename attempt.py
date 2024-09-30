@@ -57,7 +57,7 @@ plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'k--', lw=4)
 plt.xlabel('Actual Counts')
 plt.ylabel('Predicted Counts')
 plt.title('Actual vs Predicted Counts')
-# plt.show()
+plt.show()
 
 #### HYPERPARAMETER SELECTION ####
 print("Parameters available : ", rf_regressor.get_params())
