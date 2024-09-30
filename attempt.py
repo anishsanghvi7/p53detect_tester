@@ -1,18 +1,12 @@
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import RandomizedSearchCV
-import numpy as np
-from sklearn.metrics import accuracy_score, balanced_accuracy_score
-from sklearn.metrics import classification_report
-from sklearn.metrics import precision_recall_curve, PrecisionRecallDisplay
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.metrics import mean_absolute_error, median_absolute_error, explained_variance_score
-import matplotlib.pyplot as plt
-from sklearn.feature_selection import RFECV
-import csv
 from sklearn.datasets import load_breast_cancer
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, classification_report, precision_recall_curve, PrecisionRecallDisplay, confusion_matrix, ConfusionMatrixDisplay, mean_squared_error, r2_score, mean_absolute_error, median_absolute_error, explained_variance_score
+from sklearn.feature_selection import RFECV
+import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+import csv
 
 # Load Data
 data = pd.read_csv('../../../Downloads/new_sigs/SBS96_catalogue.TCGA-CF-A9FF-01.hg19.tally.csv')
