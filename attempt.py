@@ -15,7 +15,7 @@ y = data['count']
 
 # Train and test split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
-print("X_train shape : ", X_train.shape) # Train features (without label)
+print("\nX_train shape : ", X_train.shape) # Train features (without label)
 print("y_train shape : ", y_train.shape) # Train label of samples
 print("X_test shape : ", X_test.shape) # Test features (without label)
 print("y_test shape : ", y_test.shape) # Train label of samples
