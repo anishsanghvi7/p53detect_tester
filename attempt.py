@@ -9,7 +9,7 @@ import numpy as np
 import csv
 
 # Load Data
-data = pd.read_csv('../../../Downloads/new_sigs/SBS96_catalogue.TCGA-CF-A9FF-01.hg19.tally.csv')
+data = pd.read_csv('../../../Downloads/new_sigs/SBS96_catalogue.TCGA-CA-6717-01.hg19.tally.csv')
 X = data.drop(columns=['channel', 'type', 'count'])
 y = data['count']
 
@@ -46,12 +46,12 @@ print(f"Explained Variance Score: {explained_var:.3f}")
 print("\n--------------------------\n")
 
 # Plotting predicted vs actual counts
-plt.scatter(y_test, y_pred, edgecolors=(0, 0, 0))
-plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'k--', lw=4)
-plt.xlabel('Actual Counts')
-plt.ylabel('Predicted Counts')
-plt.title('Actual vs Predicted Counts')
-plt.show()
+# plt.scatter(y_test, y_pred, edgecolors=(0, 0, 0))
+# plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'k--', lw=4)
+# plt.xlabel('Actual Counts')
+# plt.ylabel('Predicted Counts')
+# plt.title('Actual vs Predicted Counts')
+# plt.show()
 
 #### HYPERPARAMETER SELECTION ####
 print("Parameters available : ", rf_regressor.get_params())
@@ -105,3 +105,15 @@ print(classification_report(y_test, y_pred_test_random, zero_division=0))
 print("--------------------------\n")
 
 print(f"Model Performance: {rf_regressor.score(X_test, y_test):.5f} \n")
+
+print("--------------------------")
+print("--- Boosted Trees Test ---")
+print("--------------------------\n")
+
+from sklearn.ensemble import HistGradientBoostingClassifier
+
+clf = HistGradientBoostingClassifier(max_iter=100).fit(X_train, y_train)
+boosted_score = clf.score(X_test, y_test)
+
+print(f"Gradient Boosted Tree Score: {boosted_score:.5f}\n")
+
