@@ -1,6 +1,7 @@
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, classification_report, precision_recall_curve, PrecisionRecallDisplay, confusion_matrix, ConfusionMatrixDisplay, mean_squared_error, r2_score, mean_absolute_error, median_absolute_error, explained_variance_score
 from sklearn.feature_selection import RFECV
 import matplotlib.pyplot as plt
@@ -41,77 +42,81 @@ print(f"Root Mean Squared Error (RMSE): {rmse:.3f}")
 print(f"Mean Absolute Error (MAE): {mae:.3f}")
 print(f"Median Absolute Error: {medae:.3f}")
 print(f"R-squared (R²): {r2:.3f}")
-print(f"Explained Variance Score: {explained_var:.3f}")
+print(f"Explained Variance Score: {explained_var:.3f}\n")
 
-print("\n--------------------------\n")
+# print("--------------------------\n")
 
-# Plotting predicted vs actual counts
-# plt.scatter(y_test, y_pred, edgecolors=(0, 0, 0))
-# plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'k--', lw=4)
-# plt.xlabel('Actual Counts')
-# plt.ylabel('Predicted Counts')
-# plt.title('Actual vs Predicted Counts')
-# plt.show()
+# # Plotting predicted vs actual counts
+# # plt.scatter(y_test, y_pred, edgecolors=(0, 0, 0))
+# # plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'k--', lw=4)
+# # plt.xlabel('Actual Counts')
+# # plt.ylabel('Predicted Counts')
+# # plt.title('Actual vs Predicted Counts')
+# # plt.show()
 
-#### HYPERPARAMETER SELECTION ####
-print("Parameters available : ", rf_regressor.get_params())
+# #### HYPERPARAMETER SELECTION ####
+# print("Parameters available : ", rf_regressor.get_params())
 
-## The following values are only applicable for random forests
-# Number of trees in random forest
-n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
-# Number of features to consider at every split
-max_features = ['sqrt', 'log2']
-# Maximum number of levels in tree
-max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
-max_depth.append(None)
-# Minimum number of samples required to split a node
-min_samples_split = [2, 5, 10]
-# Minimum number of samples required at each leaf node
-min_samples_leaf = [1, 2, 4]
-# Method of selecting samples for training each tree
-bootstrap = [True, False]
-# Create the random grid
-random_grid = {'n_estimators': n_estimators,
-'max_features': max_features,
-'max_depth': max_depth,
-'min_samples_split': min_samples_split,
-'min_samples_leaf': min_samples_leaf,
-'bootstrap': bootstrap}
-print("\nParameter values for testing : ", random_grid)
+# ## The following values are only applicable for random forests
+# # Number of trees in random forest
+# n_estimators = [int(x) for x in np.linspace(start = 200, stop = 2000, num = 10)]
+# # Number of features to consider at every split
+# max_features = ['sqrt', 'log2']
+# # Maximum number of levels in tree
+# max_depth = [int(x) for x in np.linspace(10, 110, num = 11)]
+# max_depth.append(None)
+# # Minimum number of samples required to split a node
+# min_samples_split = [2, 5, 10]
+# # Minimum number of samples required at each leaf node
+# min_samples_leaf = [1, 2, 4]
+# # Method of selecting samples for training each tree
+# bootstrap = [True, False]
+# # Create the random grid
+# random_grid = {'n_estimators': n_estimators,
+# 'max_features': max_features,
+# 'max_depth': max_depth,
+# 'min_samples_split': min_samples_split,
+# 'min_samples_leaf': min_samples_leaf,
+# 'bootstrap': bootstrap}
+# print("\nParameter values for testing : ", random_grid)
 
-print("\n--------------------------\n")
+# print("\n--------------------------\n")
 
-rf_random = RandomizedSearchCV(estimator = rf_regressor, param_distributions = random_grid,
-n_iter = 100, cv = 3, verbose=2, random_state=0, n_jobs = -1)
-rf_grid = rf_random.fit(X_train, y_train)
+# rf_random = RandomizedSearchCV(estimator = rf_regressor, param_distributions = random_grid,
+# n_iter = 100, cv = 3, verbose=2, random_state=0, n_jobs = -1)
+# rf_grid = rf_random.fit(X_train, y_train)
 
-print("\nBest parameters : ", rf_grid.best_params_)
-best_random_rf = rf_grid.best_estimator_                # Save best hyperparameters model
-y_pred_test_random = best_random_rf.predict(X_test)     # Predict labels for the test set features
+# print("\nBest parameters : ", rf_grid.best_params_)
+# best_random_rf = rf_grid.best_estimator_                # Save best hyperparameters model
+# y_pred_test_random = best_random_rf.predict(X_test)     # Predict labels for the test set features
 
-print("\n--------------------------\n")
+# print("\n--------------------------\n")
 
-## Accuracy
-print("Accuracy score original: ", accuracy_score(y_test, y_pred))
-print("Balanced accuracy score original: " , balanced_accuracy_score(y_test, y_pred), '\n')
+# ## Accuracy
+# print("Accuracy score original: ", accuracy_score(y_test, y_pred))
+# print("Balanced accuracy score original: " , balanced_accuracy_score(y_test, y_pred), '\n')
 
-print("Accuracy score best hyperparameters: ", accuracy_score(y_test, y_pred_test_random))
-print("Balanced accuracy score best hyperparameters: " , balanced_accuracy_score(y_test, y_pred_test_random))
+# print("Accuracy score best hyperparameters: ", accuracy_score(y_test, y_pred_test_random))
+# print("Balanced accuracy score best hyperparameters: " , balanced_accuracy_score(y_test, y_pred_test_random))
 
-## Classification report
-print("\nClassification report :")
-print(classification_report(y_test, y_pred_test_random, zero_division=0))
+# ## Classification report
+# print("\nClassification report :")
+# print(classification_report(y_test, y_pred_test_random, zero_division=0))
 
-print("--------------------------\n")
+# print("--------------------------\n")
 
-print(f"Model Performance: {rf_regressor.score(X_test, y_test):.5f} \n")
+# print(f"Model Performance: {rf_regressor.score(X_test, y_test):.5f} \n")
 
 print("--------------------------")
 print("--- Boosted Trees Test ---")
 print("--------------------------\n")
 
-clf = HistGradientBoostingClassifier(max_iter=100).fit(X_train, y_train)
-boosted_score = clf.score(X_test, y_test)
+hclf = HistGradientBoostingClassifier(max_iter=100).fit(X_train, y_train)
+boosted_score = hclf.score(X_test, y_test)
 
-print(f"Gradient Boosted Tree Score: {boosted_score:.5f}\n")
+print(f"Histogram Gradient Boosted Tree Score: {boosted_score:.5f}\n")
+
+# Since the current data set being used is small use Gradient only not Histogram
+clf = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0).fit(X_train, y_train)
+print(f"Gradient Boosted Tree Score: {clf.score(X_test, y_test):.5f}\n")
 
