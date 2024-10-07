@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.datasets import load_breast_cancer
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, classification_report, precision_recall_curve, PrecisionRecallDisplay, confusion_matrix, ConfusionMatrixDisplay, mean_squared_error, r2_score, mean_absolute_error, median_absolute_error, explained_variance_score
 from sklearn.feature_selection import RFECV
 import matplotlib.pyplot as plt
@@ -109,8 +109,6 @@ print(f"Model Performance: {rf_regressor.score(X_test, y_test):.5f} \n")
 print("--------------------------")
 print("--- Boosted Trees Test ---")
 print("--------------------------\n")
-
-from sklearn.ensemble import HistGradientBoostingClassifier
 
 clf = HistGradientBoostingClassifier(max_iter=100).fit(X_train, y_train)
 boosted_score = clf.score(X_test, y_test)
