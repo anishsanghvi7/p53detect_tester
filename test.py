@@ -70,18 +70,15 @@ weighted_likelihood = grouped_signature_data.groupby('Signature').apply(
     lambda x: (x['Count'] * x['Pathogenicity_Score']).sum() / x['Count'].sum()
 ).reset_index(name='Pathogenicity_Likelihood')
 
-# Print the DataFrame
-print(weighted_likelihood)
-
-print("\n--------------------------\n")
-
 final_data_temp = sig_data.melt(id_vars=['sample'], var_name='Signature', value_name='Contribution')
 
 # Merge the melted data with likelihoods
-merged_data = pd.merge(final_data_temp, weighted_likelihood, on='Signature', how='left')
+temp_merged_data = pd.merge(final_data_temp, weighted_likelihood, on='Signature', how='left')
+merged_data = temp_merged_data.dropna(subset=['Contribution', 'Pathogenicity_Likelihood'])
+
 merged_data['Weighted_Pathogenicity'] = merged_data['Contribution'] * merged_data['Pathogenicity_Likelihood']
 
-# Step 4: Sum the weighted likelihood for each sample
+# Add the weighted likelihood for each sample
 sample_pathogenicity = merged_data.groupby('sample')['Weighted_Pathogenicity'].sum().reset_index()
 
 def map_pathogenicity(likelihood):
