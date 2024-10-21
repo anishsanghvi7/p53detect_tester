@@ -36,9 +36,6 @@ sig_data["p53 status"] = ""
 print(sig_data)
 print("\n--------------------------\n")
 
-# Save the final DataFrame to a CSV file
-# final_data.to_csv(os.path.join(folder_path, 'combined_samples.csv'), index=False)
-
 ############ downloaded maf
 
 # maf_file_path = '../../../Downloads/October_2016_whitelist_2583.snv_mnv_indel.maf.xena.nonUS'
@@ -72,11 +69,6 @@ grouped_signature_data['Pathogenicity_Score'] = grouped_signature_data['Pathogen
 weighted_likelihood = grouped_signature_data.groupby('Signature').apply(
     lambda x: (x['Count'] * x['Pathogenicity_Score']).sum() / x['Count'].sum()
 ).reset_index(name='Pathogenicity_Likelihood')
-
-# pd.set_option('display.max_columns', None)
-# pd.set_option('display.max_rows', None)
-# pd.set_option('display.max_colwidth', None)
-# pd.set_option('display.expand_frame_repr', False)
 
 # Print the DataFrame
 print(weighted_likelihood)
@@ -120,7 +112,3 @@ y_pred = clf.predict(X_test)
 
 print("Accuracy:", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
-
-# Feature Importance (optional)
-feature_importances = pd.DataFrame(clf.feature_importances_, index=X.columns, columns=['Importance']).sort_values('Importance', ascending=False)
-print("Top important features:\n", feature_importances.head())
