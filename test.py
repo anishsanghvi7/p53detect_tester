@@ -11,7 +11,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 
 # Load the dataset
 folder_path = '../../../Downloads/new_sigs/'
-final_data = pd.DataFrame()
+sig_data = pd.DataFrame()
 
 # Loop through all CSV files in the folder
 for filename in os.listdir(folder_path):
@@ -27,14 +27,14 @@ for filename in os.listdir(folder_path):
         # Pivot the DataFrame so that 'channel' becomes the columns
         pivot_data = select_data.pivot_table(index=None, columns="channel", values="fraction").reset_index(drop=True)
         pivot_data.insert(0, 'sample', sample_name)
-        final_data = pd.concat([final_data, pivot_data], ignore_index=True)
+        sig_data = pd.concat([sig_data, pivot_data], ignore_index=True)
 
 # Add final column to data (empty) - maybe dont do it here??
-final_data["p53 status"] = ""
+sig_data["p53 status"] = ""
 
 # Display the final DataFrame or save it to a file
-print(final_data)
-print("--------------------------\n")
+print(sig_data)
+print("\n--------------------------\n")
 
 # Save the final DataFrame to a CSV file
 # final_data.to_csv(os.path.join(folder_path, 'combined_samples.csv'), index=False)
@@ -57,6 +57,70 @@ temp = tester_data[tester_data['Mutational_event'].str.contains('^[A, C, G, T]>[
 temp['Signature'] = temp.apply(lambda row: row['Mutant_Codon'][0] + '[' + row['Mutational_event'] + ']' + row['Mutant_Codon'][2], axis=1)
 filtered = temp[['Variant_Classification', 'Pathogenicity', 'Final comment',  'Signature']]
 
-print(tester_data)
-print("--------------------------\n")
-print(filtered)
+grouped_signature_data = filtered.groupby(['Signature', 'Pathogenicity']).size().reset_index(name='Count')
+
+pathogenicity_mapping = {
+    'Pathogenic': 1,
+    'Likely Pathogenic': 0.75,
+    'Possibly pathogenic': 0.5,
+    'VUS': 0.25,
+    'Benign': 0
+}
+
+grouped_signature_data['Pathogenicity_Score'] = grouped_signature_data['Pathogenicity'].map(pathogenicity_mapping)
+
+weighted_likelihood = grouped_signature_data.groupby('Signature').apply(
+    lambda x: (x['Count'] * x['Pathogenicity_Score']).sum() / x['Count'].sum()
+).reset_index(name='Pathogenicity_Likelihood')
+
+# pd.set_option('display.max_columns', None)
+# pd.set_option('display.max_rows', None)
+# pd.set_option('display.max_colwidth', None)
+# pd.set_option('display.expand_frame_repr', False)
+
+# Print the DataFrame
+print(weighted_likelihood)
+
+print("\n--------------------------\n")
+
+final_data_temp = sig_data.melt(id_vars=['sample'], var_name='Signature', value_name='Contribution')
+
+# Merge the melted data with likelihoods
+merged_data = pd.merge(final_data_temp, weighted_likelihood, on='Signature', how='left')
+merged_data['Weighted_Pathogenicity'] = merged_data['Contribution'] * merged_data['Pathogenicity_Likelihood']
+
+# Step 4: Sum the weighted likelihood for each sample
+sample_pathogenicity = merged_data.groupby('sample')['Weighted_Pathogenicity'].sum().reset_index()
+
+def map_pathogenicity(likelihood):
+    if likelihood >= pathogenicity_mapping['Pathogenic']:
+        return 'Pathogenic'
+    elif likelihood >= pathogenicity_mapping['Likely Pathogenic']:
+        return 'Likely Pathogenic'
+    elif likelihood >= pathogenicity_mapping['Possibly pathogenic']:
+        return 'Possibly pathogenic'
+    elif likelihood >= pathogenicity_mapping['VUS']:
+        return 'VUS'
+    else:
+        return 'Benign'
+
+sample_pathogenicity['Pathogenicity_Category'] = sample_pathogenicity['Weighted_Pathogenicity'].apply(map_pathogenicity)
+
+print(sample_pathogenicity)
+print("\n--------------------------\n")
+
+X = sample_pathogenicity.drop(columns=['sample', 'Pathogenicity_Category'])
+y = sample_pathogenicity['Pathogenicity_Category']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+clf = RandomForestClassifier(random_state=42)
+clf.fit(X_train, y_train)
+
+y_pred = clf.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, y_pred))
+print("Classification Report:\n", classification_report(y_test, y_pred))
+
+# Feature Importance (optional)
+feature_importances = pd.DataFrame(clf.feature_importances_, index=X.columns, columns=['Importance']).sort_values('Importance', ascending=False)
+print("Top important features:\n", feature_importances.head())
