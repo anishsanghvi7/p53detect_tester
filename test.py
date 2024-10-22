@@ -44,7 +44,7 @@ print("\n--------------------------\n")
 maf_file_path = '../../../Downloads/October_2016_whitelist_2583.snv_mnv_indel.maf.xena.nonUS'
 maf_data = pd.read_csv(maf_file_path, sep='\t', comment='#', low_memory=False)
 
-filtered_data = maf_data[(maf_data['start'] == maf_data['end']) & (maf_data['chr'] == '1') & (maf_data['alt'] != '-') ]
+filtered_data = maf_data[(maf_data['start'] == maf_data['end']) & (maf_data['alt'] != '-') & ((maf_data['gene'] == 'TP53') | (maf_data['gene'] == 'Unknown')) ]
 filtered_data['HG19_Variant'] = 'chr17:g.' + \
                                 filtered_data['start'].astype(str) + \
                                 filtered_data['reference'] + '>' + \
@@ -61,9 +61,15 @@ print("\n--------------------------\n")
 new_file_tester =  '../../../Downloads/UMD_variants_EU.xlsx'
 tester_data =  pd.read_excel(new_file_tester)
 
-print(tester_data)
+pattern = r'^chr17:g\.\d+[A, C, G, T]>[A, C, G, T]$'
+tester_data_filtered = tester_data[tester_data['HG19_Variant'].str.contains(pattern, regex=True)]
+p53_db = tester_data_filtered[['HG19_Variant', 'Pathogenicity', 'Final comment']]
 
+print(p53_db)
 
+#############################
+###### Join Dataframes ######
+#############################
 
 
 
