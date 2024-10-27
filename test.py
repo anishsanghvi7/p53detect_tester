@@ -50,9 +50,9 @@ filtered_data['HG19_Variant'] = 'chr17:g.' + \
                                 filtered_data['reference'] + '>' + \
                                 filtered_data['alt']
 
-result = filtered_data[['Sample', 'HG19_Variant', 'gene', 'effect']]
+maf_filtered = filtered_data[['Sample', 'HG19_Variant', 'gene', 'effect']]
 
-print(result)
+print(maf_filtered)
 print("\n--------------------------\n")
 
 #############################
@@ -66,10 +66,18 @@ tester_data_filtered = tester_data[tester_data['HG19_Variant'].str.contains(patt
 p53_db = tester_data_filtered[['HG19_Variant', 'Pathogenicity', 'Final comment']]
 
 print(p53_db)
+print("\n--------------------------\n")
 
 #############################
 ###### Join Dataframes ######
 #############################
+merged_data = pd.merge(maf_filtered, p53_db[['HG19_Variant', 'Pathogenicity', 'Final comment']], 
+                       on='HG19_Variant', how='left')
+# merged_data['Pathogenicity'].fillna('Unknown', inplace=True)
+# merged_data['Final comment'].fillna('No comment', inplace=True)
+
+print(merged_data.dropna())
+print("\n--------------------------\n")
 
 
 
