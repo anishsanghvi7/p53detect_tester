@@ -35,6 +35,7 @@ for filename in os.listdir(folder_path):
 sig_data["p53 status"] = ""
 
 # Display the final DataFrame or save it to a file
+print("\n--------------------------\n")
 print(sig_data)
 print("\n--------------------------\n")
 
@@ -63,7 +64,7 @@ tester_data =  pd.read_excel(new_file_tester)
 
 pattern = r'^chr17:g\.\d+[A, C, G, T]>[A, C, G, T]$'
 tester_data_filtered = tester_data[tester_data['HG19_Variant'].str.contains(pattern, regex=True)]
-p53_db = tester_data_filtered[['HG19_Variant', 'Pathogenicity', 'Final comment']]
+p53_db = tester_data_filtered[['HG19_Variant', 'COSMIC_ID', 'Pathogenicity', 'Final comment']]
 
 print(p53_db)
 print("\n--------------------------\n")
@@ -71,12 +72,37 @@ print("\n--------------------------\n")
 #############################
 ###### Join Dataframes ######
 #############################
-merged_data = pd.merge(maf_filtered, p53_db[['HG19_Variant', 'Pathogenicity', 'Final comment']], 
+merged_data = pd.merge(maf_filtered, p53_db[['HG19_Variant', 'COSMIC_ID', 'Pathogenicity', 'Final comment']], 
                        on='HG19_Variant', how='left')
-# merged_data['Pathogenicity'].fillna('Unknown', inplace=True)
-# merged_data['Final comment'].fillna('No comment', inplace=True)
+merged_data.fillna({ 'Pathogenicity' : 'Unknown' }, inplace=True)
+merged_data.fillna({ 'Final comment' : 'No Comment' }, inplace=True)
 
-print(merged_data.dropna())
+pathogenicity_mapping = {
+    'Pathogenic': 1,
+    'Likely Pathogenic': 0.75,
+    'Possibly pathogenic': 0.5,
+    'VUS': 0.25,
+    'Benign': 0,
+    'Unknown': -1,
+}
+
+merged_data['Pathogenicity Score'] = merged_data['Pathogenicity'].map(pathogenicity_mapping)
+formatted_merged = merged_data[['HG19_Variant', 'gene', 'effect', 'Pathogenicity', 'Final comment', 'Pathogenicity Score']]
+
+# print(merged_data.dropna())
+# print(merged_data[(merged_data['gene'] == 'TP53') & (merged_data['Pathogenicity'] != 'Unknown')]) # 0 values ?
+# print(formatted_merged[(formatted_merged['Pathogenicity Score'] != -1.0)])
+#                HG19_Variant     gene effect        Pathogenicity                                      Final comment  Pathogenicity Score
+# 2257608  chr17:g.7573988G>A  Unknown    IGR  Possibly pathogenic  Published research and database analysis do no...                 0.50
+# 2903958  chr17:g.7578524C>A  Unknown    IGR                  VUS  Published research and database analysis do no...                 0.25
+# 3049847  chr17:g.7578451T>A  Unknown    IGR  Possibly pathogenic  Published research and database analysis do no...                 0.50
+# 4121528  chr17:g.7578258G>A  Unknown    IGR               Benign  Multiple lines of computational evidence sugge...                 0.00
+# 7027505  chr17:g.7577558C>T  Unknown    IGR               Benign  Multiple lines of computational evidence sugge...                 0.00
+# 7993121  chr17:g.7579384A>T  Unknown    IGR                  VUS  Published research and database analysis do no...                 0.25
+# 9680615  chr17:g.7578469G>C  Unknown    IGR                  VUS  Published research and database analysis do no...                 0.25
+# 9706785  chr17:g.7576876G>T  Unknown    IGR                  VUS  Published research and database analysis do no...                 0.25
+# 9770220  chr17:g.7577536A>C  Unknown    IGR               Benign  Multiple lines of computational evidence sugge...                 0.00
+print(formatted_merged)
 print("\n--------------------------\n")
 
 
