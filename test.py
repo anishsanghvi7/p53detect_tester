@@ -45,9 +45,9 @@ print("\n--------------------------\n")
 maf_file_path = '../../../Downloads/October_2016_whitelist_2583.snv_mnv_indel.maf.xena.nonUS'
 maf_data = pd.read_csv(maf_file_path, sep='\t', comment='#', low_memory=False)
 
-filtered_data = maf_data[(maf_data['start'] == maf_data['end']) & (maf_data['alt'] != '-') & ((maf_data['gene'] == 'TP53') | (maf_data['gene'] == 'Unknown')) ]
+filtered_data = maf_data[(maf_data['start'] == maf_data['end']) & (maf_data['alt'] != '-')]
 filtered_data['HG19_Variant'] = 'chr17:g.' + \
-                                filtered_data['start'].astype(str) + \
+                                (filtered_data['start'] - 1).astype(str) + \
                                 filtered_data['reference'] + '>' + \
                                 filtered_data['alt']
 
@@ -89,21 +89,12 @@ pathogenicity_mapping = {
 merged_data['Pathogenicity Score'] = merged_data['Pathogenicity'].map(pathogenicity_mapping)
 formatted_merged = merged_data[['HG19_Variant', 'gene', 'effect', 'Pathogenicity', 'Final comment', 'Pathogenicity Score']]
 
-# print(merged_data.dropna())
-# print(merged_data[(merged_data['gene'] == 'TP53') & (merged_data['Pathogenicity'] != 'Unknown')]) # 0 values ?
-# print(formatted_merged[(formatted_merged['Pathogenicity Score'] != -1.0)])
-#                HG19_Variant     gene effect        Pathogenicity                                      Final comment  Pathogenicity Score
-# 2257608  chr17:g.7573988G>A  Unknown    IGR  Possibly pathogenic  Published research and database analysis do no...                 0.50
-# 2903958  chr17:g.7578524C>A  Unknown    IGR                  VUS  Published research and database analysis do no...                 0.25
-# 3049847  chr17:g.7578451T>A  Unknown    IGR  Possibly pathogenic  Published research and database analysis do no...                 0.50
-# 4121528  chr17:g.7578258G>A  Unknown    IGR               Benign  Multiple lines of computational evidence sugge...                 0.00
-# 7027505  chr17:g.7577558C>T  Unknown    IGR               Benign  Multiple lines of computational evidence sugge...                 0.00
-# 7993121  chr17:g.7579384A>T  Unknown    IGR                  VUS  Published research and database analysis do no...                 0.25
-# 9680615  chr17:g.7578469G>C  Unknown    IGR                  VUS  Published research and database analysis do no...                 0.25
-# 9706785  chr17:g.7576876G>T  Unknown    IGR                  VUS  Published research and database analysis do no...                 0.25
-# 9770220  chr17:g.7577536A>C  Unknown    IGR               Benign  Multiple lines of computational evidence sugge...                 0.00
-print(formatted_merged)
+print(formatted_merged[(formatted_merged['Pathogenicity Score'] != -1.0) & (formatted_merged['gene'] == 'TP53')])
 print("\n--------------------------\n")
+
+##############################
+###### Machine Learning ######
+##############################
 
 
 
