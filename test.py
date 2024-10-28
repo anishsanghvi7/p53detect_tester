@@ -53,9 +53,6 @@ filtered_data['HG19_Variant'] = 'chr17:g.' + \
 
 maf_filtered = filtered_data[['Sample', 'HG19_Variant', 'gene', 'effect']]
 
-print(maf_filtered)
-print("\n--------------------------\n")
-
 #############################
 ####### TP53 Database #######
 #############################
@@ -65,9 +62,6 @@ tester_data =  pd.read_excel(new_file_tester)
 pattern = r'^chr17:g\.\d+[A, C, G, T]>[A, C, G, T]$'
 tester_data_filtered = tester_data[tester_data['HG19_Variant'].str.contains(pattern, regex=True)]
 p53_db = tester_data_filtered[['HG19_Variant', 'COSMIC_ID', 'Pathogenicity', 'Final comment']]
-
-print(p53_db)
-print("\n--------------------------\n")
 
 #############################
 ###### Join Dataframes ######
@@ -86,10 +80,11 @@ pathogenicity_mapping = {
     'Unknown': -1,
 }
 
-merged_data['Pathogenicity Score'] = merged_data['Pathogenicity'].map(pathogenicity_mapping)
-formatted_merged = merged_data[['HG19_Variant', 'gene', 'effect', 'Pathogenicity', 'Final comment', 'Pathogenicity Score']]
+merged_data['p53 status'] = merged_data['Pathogenicity'].map(pathogenicity_mapping)
+formatted_merged = merged_data[['HG19_Variant', 'gene', 'effect', 'Pathogenicity', 'Final comment', 'p53 status']]
+prepared_data = formatted_merged[(formatted_merged['p53 status'] != -1.0) & (formatted_merged['gene'] == 'TP53')]
 
-print(formatted_merged[(formatted_merged['Pathogenicity Score'] != -1.0) & (formatted_merged['gene'] == 'TP53')])
+print(prepared_data)
 print("\n--------------------------\n")
 
 ##############################
@@ -98,57 +93,6 @@ print("\n--------------------------\n")
 
 
 
-
-# temp = tester_data[tester_data['Mutational_event'].str.contains('^[A, C, G, T]>[A, C, G, T]$') & 
-#                     tester_data['WT_Codon'].str.contains('^[ACGT]{3}$') & 
-#                     tester_data['Mutant_Codon'].str.contains('^[ACGT]{3}$')]
-
-# temp['Signature'] = temp.apply(lambda row: row['Mutant_Codon'][0] + '[' + row['Mutational_event'] + ']' + row['Mutant_Codon'][2], axis=1)
-# filtered = temp[['Variant_Classification', 'Pathogenicity', 'Final comment',  'Signature']]
-
-# grouped_signature_data = filtered.groupby(['Signature', 'Pathogenicity']).size().reset_index(name='Count')
-
-# pathogenicity_mapping = {
-#     'Pathogenic': 1,
-#     'Likely Pathogenic': 0.75,
-#     'Possibly pathogenic': 0.5,
-#     'VUS': 0.25,
-#     'Benign': 0
-# }
-
-# grouped_signature_data['Pathogenicity_Score'] = grouped_signature_data['Pathogenicity'].map(pathogenicity_mapping)
-
-# weighted_likelihood = grouped_signature_data.groupby('Signature').apply(
-#     lambda x: (x['Count'] * x['Pathogenicity_Score']).sum() / x['Count'].sum()
-# ).reset_index(name='Pathogenicity_Likelihood')
-
-# final_data_temp = sig_data.melt(id_vars=['sample'], var_name='Signature', value_name='Contribution')
-
-# # Merge the melted data with likelihoods
-# temp_merged_data = pd.merge(final_data_temp, weighted_likelihood, on='Signature', how='left')
-# merged_data = temp_merged_data.dropna(subset=['Contribution', 'Pathogenicity_Likelihood'])
-
-# merged_data['Weighted_Pathogenicity'] = merged_data['Contribution'] * merged_data['Pathogenicity_Likelihood']
-
-# # Add the weighted likelihood for each sample
-# sample_pathogenicity = merged_data.groupby('sample')['Weighted_Pathogenicity'].sum().reset_index()
-
-# def map_pathogenicity(likelihood):
-#     if likelihood >= pathogenicity_mapping['Pathogenic']:
-#         return 'Pathogenic'
-#     elif likelihood >= pathogenicity_mapping['Likely Pathogenic']:
-#         return 'Likely Pathogenic'
-#     elif likelihood >= pathogenicity_mapping['Possibly pathogenic']:
-#         return 'Possibly pathogenic'
-#     elif likelihood >= pathogenicity_mapping['VUS']:
-#         return 'VUS'
-#     else:
-#         return 'Benign'
-
-# sample_pathogenicity['Pathogenicity_Category'] = sample_pathogenicity['Weighted_Pathogenicity'].apply(map_pathogenicity)
-
-# print('\n', sample_pathogenicity)
-# print("\n--------------------------\n")
 
 # X = sample_pathogenicity.drop(columns=['sample', 'Pathogenicity_Category'])
 # y = sample_pathogenicity['Pathogenicity_Category']
